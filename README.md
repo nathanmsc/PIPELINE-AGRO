@@ -81,70 +81,73 @@ schema_sidra = {
 
 ---
 
-### 1.3 Arquitetura Técnica Detalhada
-
-#### 1.3.1 Arquitetura Lambda Modificada
+#### Arquitetura Lambda Modificada
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     CAMADA DE INGESTÃO                       │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-│  │  NiFi    │  │ Airflow  │  │  Kafka   │  │  Lambda  │   │
-│  │ Crawler  │  │ Scheduler│  │ Producer │  │ Functions│   │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  └────┬─────┘   │
-└───────┼────────────┼─────────────┼─────────────┼──────────┘
-        │            │             │             │
-        ▼            ▼             ▼             ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    DATA LAKE (S3/MinIO)                      │
+┌────────────────────┐
+│ CAMADA DE INGESTÃO │
+│                    │
+│   ┌────────────┐   │
+│   │  Airflow   │   │
+│   │ Scheduler  │   │
+│   └────────────┘   │
+└─────────┼──────────┘
+          │
+          ▼
+┌────────────────────────────────────────────────────────────┐
+│                     DATA LAKE (S3 / MinIO)                 │
+│                                                            │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │  Raw Zone (Bronze)                                    │  │
-│  │  - Dados brutos no formato original                  │  │
-│  │  - Particionamento: /source/year/month/day/          │  │
-│  │  - Formato: JSON, CSV, Parquet                       │  │
-│  │  - Retenção: 365 dias                                │  │
+│  │ Raw Zone (Bronze)                                    │  │
+│  │ - Dados brutos no formato original                   │  │
+│  │ - Particionamento: /source/year/month/day/           │  │
+│  │ - Formatos: JSON, CSV, Parquet                       │  │
+│  │ - Retenção: 365 dias                                 │  │
 │  └──────────────────────────────────────────────────────┘  │
+│                                                            │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │  Refined Zone (Silver)                                │  │
-│  │  - Dados limpos e padronizados                       │  │
-│  │  - Schema enforcement via Delta Lake                 │  │
-│  │  - Formato: Delta/Parquet + metadados                │  │
-│  │  - Compressão: Snappy                                │  │
-│  │  - Retenção: 730 dias                                │  │
+│  │ Refined Zone (Silver)                                │  │
+│  │ - Dados limpos e padronizados                        │  │
+│  │ - Schema enforcement (Delta Lake)                    │  │
+│  │ - Formato: Delta / Parquet                           │  │
+│  │ - Compressão: Snappy                                 │  │
+│  │ - Retenção: 730 dias                                 │  │
 │  └──────────────────────────────────────────────────────┘  │
+│                                                            │
 │  ┌──────────────────────────────────────────────────────┐  │
-│  │  Curated Zone (Gold)                                  │  │
-│  │  - Dados agregados e features                        │  │
-│  │  - Modelos dimensionais (Star Schema)               │  │
-│  │  - Formato: Parquet otimizado                       │  │
-│  │  - Compressão: ZSTD                                  │  │
-│  │  - Retenção: Indefinida                              │  │
+│  │ Curated Zone (Gold)                                  │  │
+│  │ - Dados agregados e features analíticas              │  │
+│  │ - Modelagem dimensional (Star Schema)                │  │
+│  │ - Formato: Parquet otimizado                         │  │
+│  │ - Compressão: ZSTD                                   │  │
+│  │ - Retenção: Indefinida                               │  │
 │  └──────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────┘
-        │                                       │
-        ▼                                       ▼
-┌─────────────────────┐            ┌──────────────────────────┐
-│  BATCH PROCESSING   │            │   SPEED LAYER (Opcional)  │
-│  - Spark/Airflow    │            │   - Kafka Streams         │
-│  - Processamento    │            │   - Flink                 │
-│  - Diário/Semanal   │            │   - Dados tempo real      │
-└──────────┬──────────┘            └───────────┬──────────────┘
-           │                                    │
-           └────────────────┬───────────────────┘
-                            ▼
-                ┌───────────────────────┐
-                │  SERVING LAYER        │
-                │  - PostgreSQL (OLTP)  │
-                │  - Redshift (OLAP)    │
-                │  - Elasticsearch      │
-                │  - Redis (Cache)      │
-                └───────────┬───────────┘
-                            │
-                            ▼
-                ┌───────────────────────┐
-                │  CONSUMPTION LAYER    │
-                │  - Power BI           │
-                │  - Tableau            │
-                │  - APIs REST          │
-                │  - Jupyter Notebooks  │
-                └───────────────────────┘
+└────────────────────────────────────────────────────────────┘
+          │
+          ▼
+┌───────────────────────────┐
+│   PROCESSAMENTO BATCH     │
+│                           │
+│ - Apache Spark            │
+│ - Orquestração: Airflow   │
+│ - Execução: Diário/Semanal│
+└────────────┬──────────────┘
+             │
+             ▼
+┌───────────────────────────┐
+│      SERVING LAYER        │
+│                           │
+│ - PostgreSQL (OLAP)       │
+│ - Data Warehouse          │
+│ - Modelagem dimensional   │
+└────────────┬──────────────┘
+             │
+             ▼
+┌───────────────────────────┐
+│    CONSUMPTION LAYER      │
+│                           │
+│ - Dashboards BI           │
+│ - Jupyter Notebooks       │
+│ - Análises exploratórias  │
+└───────────────────────────┘
+
 ```
