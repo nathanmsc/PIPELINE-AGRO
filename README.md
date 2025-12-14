@@ -152,8 +152,7 @@ schema_sidra = {
 
 ```
 ---
-```html
-<img 
+```img
 <svg width="1100" height="1300" viewBox="0 0 1100 1300"
      xmlns="http://www.w3.org/2000/svg"
      font-family="Arial, Helvetica, sans-serif">
@@ -232,5 +231,4 @@ schema_sidra = {
   <text x="430" y="1170" class="text">• Análises exploratórias</text>
 
 </svg>
-</img>
 ```
