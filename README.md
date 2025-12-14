@@ -83,71 +83,71 @@ schema_sidra = {
 
 #### Arquitetura Lambda Modificada
 ```
-┌────────────────────┐
-│ CAMADA DE INGESTÃO │
-│                    │
-│   ┌────────────┐   │
-│   │  Airflow   │   │
-│   │ Scheduler  │   │
-│   └────────────┘   │
-└─────────┼──────────┘
-          │
-          ▼
-┌────────────────────────────────────────────────────────────┐
-│                     DATA LAKE (S3 / MinIO)                 │
-│                                                            │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │ Raw Zone (Bronze)                                    │  │
-│  │ - Dados brutos no formato original                   │  │
-│  │ - Particionamento: /source/year/month/day/           │  │
-│  │ - Formatos: JSON, CSV, Parquet                       │  │
-│  │ - Retenção: 365 dias                                 │  │
-│  └──────────────────────────────────────────────────────┘  │
-│                                                            │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │ Refined Zone (Silver)                                │  │
-│  │ - Dados limpos e padronizados                        │  │
-│  │ - Schema enforcement (Delta Lake)                    │  │
-│  │ - Formato: Delta / Parquet                           │  │
-│  │ - Compressão: Snappy                                 │  │
-│  │ - Retenção: 730 dias                                 │  │
-│  └──────────────────────────────────────────────────────┘  │
-│                                                            │
-│  ┌──────────────────────────────────────────────────────┐  │
-│  │ Curated Zone (Gold)                                  │  │
-│  │ - Dados agregados e features analíticas              │  │
-│  │ - Modelagem dimensional (Star Schema)                │  │
-│  │ - Formato: Parquet otimizado                         │  │
-│  │ - Compressão: ZSTD                                   │  │
-│  │ - Retenção: Indefinida                               │  │
-│  └──────────────────────────────────────────────────────┘  │
-└────────────────────────────────────────────────────────────┘
-          │
-          ▼
-┌───────────────────────────┐
-│   PROCESSAMENTO BATCH     │
-│                           │
-│ - Apache Spark            │
-│ - Orquestração: Airflow   │
-│ - Execução: Diário/Semanal│
-└────────────┬──────────────┘
-             │
-             ▼
-┌───────────────────────────┐
-│      SERVING LAYER        │
-│                           │
-│ - PostgreSQL (OLAP)       │
-│ - Data Warehouse          │
-│ - Modelagem dimensional   │
-└────────────┬──────────────┘
-             │
-             ▼
-┌───────────────────────────┐
-│    CONSUMPTION LAYER      │
-│                           │
-│ - Dashboards BI           │
-│ - Jupyter Notebooks       │
-│ - Análises exploratórias  │
-└───────────────────────────┘
+                          ┌───────────────────────────┐
+                          │     CAMADA DE INGESTÃO    │
+                          │                           │
+                          │     ┌──────────────┐      │
+                          │     │   Airflow    │      │
+                          │     │  Scheduler   │      │
+                          │     └──────────────┘      │
+                          └──────────────┬────────────┘
+                                         │
+                                         ▼
+        ┌───────────────────────────────────────────────────────────┐
+        │                    DATA LAKE (S3 / MinIO)                 │
+        │                                                           │
+        │   ┌────────────────────────────────────────────────────┐  │
+        │   │ Raw Zone (Bronze)                                  │  │
+        │   │ - Dados brutos no formato original                 │  │
+        │   │ - Particionamento: /source/year/month/day/         │  │
+        │   │ - Formatos: JSON, CSV, Parquet                     │  │
+        │   │ - Retenção: 365 dias                               │  │
+        │   └────────────────────────────────────────────────────┘  │
+        │                                                           │
+        │   ┌────────────────────────────────────────────────────┐  │
+        │   │ Refined Zone (Silver)                              │  │
+        │   │ - Dados limpos e padronizados                      │  │
+        │   │ - Schema enforcement (Delta Lake)                  │  │
+        │   │ - Formato: Delta / Parquet                         │  │
+        │   │ - Compressão: Snappy                               │  │
+        │   │ - Retenção: 730 dias                               │  │
+        │   └────────────────────────────────────────────────────┘  │
+        │                                                           │
+        │   ┌────────────────────────────────────────────────────┐  │
+        │   │ Curated Zone (Gold)                                │  │
+        │   │ - Dados agregados e features analíticas            │  │
+        │   │ - Modelagem dimensional (Star Schema)              │  │
+        │   │ - Formato: Parquet otimizado                       │  │
+        │   │ - Compressão: ZSTD                                 │  │
+        │   │ - Retenção: Indefinida                             │  │
+        │   └────────────────────────────────────────────────────┘  │
+        └──────────────────────────────┬────────────────────────────┘
+                                       │
+                                       ▼
+                          ┌───────────────────────────┐
+                          │     PROCESSAMENTO BATCH   │
+                          │                           │
+                          │ - Apache Spark            │
+                          │ - Orquestração: Airflow   │
+                          │ - Execução: Diário/Semanal│
+                          └──────────────┬────────────┘
+                                         │
+                                         ▼
+                          ┌───────────────────────────┐
+                          │       SERVING LAYER       │
+                          │                           │
+                          │ - PostgreSQL (OLAP)       │
+                          │ - Data Warehouse          │
+                          │ - Modelagem dimensional   │
+                          └──────────────┬────────────┘
+                                         │
+                                         ▼
+                          ┌───────────────────────────┐
+                          │     CONSUMPTION LAYER     │
+                          │                           │
+                          │ - Dashboards BI           │
+                          │ - Jupyter Notebooks       │
+                          │ - Análises exploratórias  │
+                          └───────────────────────────┘
 
 ```
