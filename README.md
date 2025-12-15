@@ -7,7 +7,7 @@
 
 | Fonte / Instituição | API / Interface | Formato dos Dados | Frequência | Limitações Técnicas |
 |--------------------|-----------------|-------------------|------------|---------------------|
-| [INMET](https://apitempo.inmet.gov.br/estacao/dados/) | REST API | JSON | Horária | Rate limit: 1000 requisições/dia |
+| [INMET](https://portal.inmet.gov.br/uploads/dadoshistoricos/2025.zip) | Download manual | zip/csv | mensal | sem limite formal |
 | [IBGE – SIDRA](https://apisidra.ibge.gov.br/) | SOAP / REST | XML / JSON | Anual | Sem limite formal |
 | CONAB | Downloads manuais | CSV / Excel | Mensal | Não possui API pública |
 | CEPEA | Web scraping | HTML | Diária | Necessita parsing de páginas |
