@@ -73,7 +73,7 @@ schema_sidra = {
     "U": "Unidade de medida"
 }
 ```
-
+---
 ### Arquitetura Lambda Modificada
 
 
@@ -87,8 +87,6 @@ schema_sidra = {
                           └──────────────┬────────────┘
                                          │
                                          ▼
- [DATALAKE]((https://pub-a8167dbe4471488a908c0920420b2bba.r2.dev))
-
         ┌───────────────────────────────────────────────────────────┐
         |                   [DATA LAKE - R2 / Bucket]               | 
         │                                                           │
@@ -146,4 +144,4 @@ schema_sidra = {
                           │ - Análises exploratórias  │
                           └───────────────────────────┘
 
-dsa
+---
