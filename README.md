@@ -88,8 +88,8 @@ schema_sidra = {
                                          │
                                          ▼
         ┌───────────────────────────────────────────────────────────┐
-        |                   [DATA LAKE - R2 / Bucket]               | 
-        │                                                           │
+        |                   DATA LAKE - [R2 / Bucket]               | 
+        │     https://pub-a8167dbe4471488a908c0920420b2bba.r2.dev   │
         │   ┌────────────────────────────────────────────────────┐  │
         │   │ Raw Zone (Bronze)                                  │  │
         │   │ - Dados brutos no formato original                 │  │
