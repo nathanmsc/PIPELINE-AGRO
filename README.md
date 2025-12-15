@@ -76,7 +76,7 @@ schema_sidra = {
 
 ### Arquitetura Lambda Modificada
 
-dsads
+
                           ┌───────────────────────────┐
                           │     CAMADA DE INGESTÃO    │
                           │                           │
@@ -87,7 +87,8 @@ dsads
                           └──────────────┬────────────┘
                                          │
                                          ▼
-                                    [DATALAKE]((https://pub-a8167dbe4471488a908c0920420b2bba.r2.dev))
+ [DATALAKE]((https://pub-a8167dbe4471488a908c0920420b2bba.r2.dev))
+
         ┌───────────────────────────────────────────────────────────┐
         |                   [DATA LAKE - R2 / Bucket]               | 
         │                                                           │
