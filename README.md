@@ -74,15 +74,9 @@ schema_sidra = {
 }
 ```
 
-**Estratégias de Fallback:**
-- Cache local de 7 dias para dados críticos
-- Endpoints alternativos (mirrors regionais)
-- Dados históricos como fonte secundária
+### Arquitetura Lambda Modificada
 
----
-
-#### Arquitetura Lambda Modificada
-
+dsads
                           ┌───────────────────────────┐
                           │     CAMADA DE INGESTÃO    │
                           │                           │
@@ -151,4 +145,4 @@ schema_sidra = {
                           │ - Análises exploratórias  │
                           └───────────────────────────┘
 
----
+dsa
