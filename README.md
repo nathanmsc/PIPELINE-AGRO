@@ -82,7 +82,7 @@ schema_sidra = {
 ---
 
 #### Arquitetura Lambda Modificada
-```
+
                           ┌───────────────────────────┐
                           │     CAMADA DE INGESTÃO    │
                           │                           │
@@ -150,4 +150,4 @@ schema_sidra = {
                           │ - Análises exploratórias  │
                           └───────────────────────────┘
 
-```
+---
