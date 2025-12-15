@@ -7,9 +7,9 @@
 
 | Fonte / Instituição | API / Interface | Formato dos Dados | Frequência | Limitações Técnicas |
 |--------------------|-----------------|-------------------|------------|---------------------|
-| [INMET](https://portal.inmet.gov.br/uploads/dadoshistoricos/2025.zip) | Download manual | zip/csv | mensal | sem limite formal |
+| [INMET](https://portal.inmet.gov.br/uploads/dadoshistoricos/2025.zip) | Download manual | ZIP / CSV | mensal | Sem limite formal |
 | [IBGE – SIDRA](https://apisidra.ibge.gov.br/) | SOAP / REST | XML / JSON | Anual | Sem limite formal |
-| CONAB | Downloads manuais | CSV / Excel | Mensal | Não possui API pública |
+| [CONAB](https://portaldeinformacoes.conab.gov.br/downloads/arquivos/PrecosMensalUF.txt) | Downloads manuais | CSV / Excel | Mensal | Sem limite formal |
 | CEPEA | Web scraping | HTML | Diária | Necessita parsing de páginas |
 | ANA (Hidrologia) | REST API | JSON | Diária | Requer autenticação OAuth 2.0 |
 
