@@ -2,7 +2,7 @@
 
 ### PIPELINE DE DADOS DO AGRONEGÓCIO
 
-#### Fontes de dados
+#### FONTES DE DADOS
 
 
 | Fonte / Instituição | API / Interface | Formato dos Dados | Frequência | Limitações Técnicas |
@@ -15,6 +15,8 @@
 
 
 IBGE – Serviços de Dados: https://servicodados.ibge.gov.br/api/docs
+
+---
 
 ### INMET - DADOS CLIMÁTICOS
 
@@ -49,6 +51,7 @@ erros_conhecidos = {
     503: "Serviço temporariamente indisponível - retry após 5min"
 }
 ```
+---
 ### SIDRA PRODUÇÃO AGRÍCOLA
 
 ```py
