@@ -20,37 +20,7 @@ IBGE – Serviços de Dados: https://servicodados.ibge.gov.br/api/docs
 
 ### INMET - DADOS CLIMÁTICOS
 
-```py
-# Especificação técnica detalhada
-endpoint = "https://apitempo.inmet.gov.br/estacao/dados/"
-parametros = {
-    "dataInicio": "YYYY-MM-DD",
-    "dataFim": "YYYY-MM-DD",
-    "codEstacao": "A001"  # Código da estação meteorológica
-}
-headers = {
-    "Authorization": f"Bearer {token}"
-}
-
-# Campos retornados
-campos_resposta = {
-    "DC_NOME": "Nome da estação",
-    "VL_LATITUDE": "Latitude",
-    "VL_LONGITUDE": "Longitude",
-    "DT_MEDICAO": "Data/hora da medição",
-    "TEM_INS": "Temperatura instantânea (°C)",
-    "PRE_INS": "Precipitação instantânea (mm)",
-    "UMD_INS": "Umidade relativa (%)"
-}
-
-# Tratamento de erros específicos
-erros_conhecidos = {
-    400: "Parâmetros inválidos - verificar formato de data",
-    401: "Token de autenticação expirado",
-    429: "Rate limit excedido - implementar backoff exponencial",
-    503: "Serviço temporariamente indisponível - retry após 5min"
-}
-```
+[EXTRACT FROM IMNET](ETL/imnet.ipynb)
 ---
 ### SIDRA PRODUÇÃO AGRÍCOLA
 
