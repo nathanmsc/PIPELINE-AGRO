@@ -21,12 +21,10 @@ IBGE – Serviços de Dados: https://servicodados.ibge.gov.br/api/docs
 ### INMET - DADOS CLIMÁTICOS
 
 #### [Série histórica do clima 2025](ETL/imnet.ipynb)
----
 
 ### CONAB
 
 #### [Variação dos preços dos produtos](ETL/imnet.ipynb)
----
 
 ### SIDRA PRODUÇÃO AGRÍCOLA
 
