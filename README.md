@@ -22,6 +22,12 @@ IBGE – Serviços de Dados: https://servicodados.ibge.gov.br/api/docs
 
 [EXTRACT FROM IMNET](ETL/imnet.ipynb)
 ---
+
+### CONAB
+
+[CONAB](ETL/imnet.ipynb)
+---
+
 ### SIDRA PRODUÇÃO AGRÍCOLA
 
 ```py
