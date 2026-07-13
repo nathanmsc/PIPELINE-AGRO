@@ -8,13 +8,18 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import tempfile
+import unicodedata
 from pathlib import Path
 
 import requests
 
 from dotenv import load_dotenv
 from pyspark.sql import SparkSession
+
+from spark.schema_evolution import write_with_schema_check
+
 
 log = logging.getLogger(__name__)
 
@@ -41,13 +46,7 @@ def _load_catalog_config() -> tuple[str, str, str]:
     2. Lê as variáveis de ambiente (agora ajustadas pelo .env).
     3. Valida que nenhuma está ausente ou em branco.
 
-    Por que não usar variáveis de módulo?
-    O Airflow faz o import do módulo no processo do DAG-processor (parse)
-    antes de lançar o worker. Naquele momento o .env pode não ter sido
-    carregado ainda, ou as vars de ambiente podem estar vazias — congelando
-    TOKEN=None para toda a vida útil do módulo.
-    Chamar esta função DENTRO da task garante a leitura no momento certo.
-    """
+    Retorna (catalog_uri, warehouse, token)"""
     for env_file in _ENV_CANDIDATES:
         if env_file.exists():
             # override=True: o .env sempre vence sobre vars vazias do container
@@ -81,6 +80,48 @@ def _load_catalog_config() -> tuple[str, str, str]:
         token[-4:],
     )
     return catalog_uri, warehouse, token
+
+
+def _normalize_column_name(name: object, used_names: set[str] | None = None) -> str:
+    """Normaliza nomes de coluna para um formato seguro ao escrever no Iceberg."""
+    text = "" if name is None else str(name).strip()
+    if not text:
+        text = "column"
+
+    normalized = unicodedata.normalize("NFKD", text)
+    normalized = normalized.encode("ascii", "ignore").decode("ascii")
+    normalized = normalized.lower()
+    normalized = re.sub(r"[^a-z0-9]+", "_", normalized).strip("_")
+
+    if not normalized:
+        normalized = "column"
+    if normalized[0].isdigit():
+        normalized = f"col_{normalized}"
+
+    if used_names is None:
+        return normalized
+
+    candidate = normalized
+    suffix = 2
+    while candidate in used_names:
+        candidate = f"{normalized}_{suffix}"
+        suffix += 1
+
+    used_names.add(candidate)
+    return candidate
+
+
+def _normalize_dataframe_schema(df) -> object:
+    """Renomeia colunas com caracteres inválidos para um esquema compatível."""
+    columns = list(df.columns)
+    used_names: set[str] = set()
+    normalized_columns = [_normalize_column_name(col, used_names) for col in columns]
+
+    if normalized_columns != columns:
+        log.info("Normalizando colunas do DataFrame para escrita Iceberg: %s", dict(zip(columns, normalized_columns)))
+        return df.toDF(*normalized_columns)
+
+    return df
 
 
 def get_spark(app_name: str = "conab-ingest") -> SparkSession:
@@ -193,6 +234,7 @@ def ingest(item: dict) -> None:
 
     try:
         df = _read_dataframe(spark, local_path, extensao)
+        df = _normalize_dataframe_schema(df)
 
         # O namespace deve bater com o prefixo do FQN da tabela.
         # Ex.: table_fqn = "conab.safra" → namespace = "conab"
@@ -205,17 +247,14 @@ def ingest(item: dict) -> None:
         spark.sql(f"CREATE NAMESPACE IF NOT EXISTS {namespace}.{layer}")
         spark.sql(f"CREATE NAMESPACE IF NOT EXISTS {namespace}.{layer}.{source}")
 
-        if spark.catalog.tableExists(table_fqn):
-            try:
-                df.writeTo(table_fqn).append()
-            except Exception as exc:
-                if "NoSuchKeyException" in str(exc) or "404" in str(exc):
-                    spark.catalog.dropTable(table_fqn, ignoreIfNotExists=True)
-                    df.writeTo(table_fqn).using("iceberg").createOrReplace()
-                else:
-                    raise
-        else:
-            df.writeTo(table_fqn).using("iceberg").createOrReplace()
+        try:
+            write_with_schema_check(spark, df, table_fqn)
+        except Exception as exc:
+            if "NoSuchKeyException" in str(exc) or "404" in str(exc):
+                spark.catalog.dropTable(table_fqn, ignoreIfNotExists=True)
+                df.writeTo(table_fqn).using("iceberg").createOrReplace()
+            else:
+                raise
 
     finally:
         os.remove(local_path)
