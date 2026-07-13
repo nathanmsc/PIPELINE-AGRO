@@ -1,0 +1,11 @@
+apache-airflow-providers-postgres
+psycopg2-binary
+asyncpg
+requests
+beautifulsoup4
+pyspark
+pandas
+openpyxl
+python-dotenv
+python-calamine
+xlrd>=2.0.1

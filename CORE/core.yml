@@ -1,0 +1,136 @@
+version: '3.9'
+
+x-airflow-environment: &airflow-environment
+  AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  AIRFLOW__CORE__FERNET_KEY: FB1Zs_H27J_C_V3w77_T_X98-7B_C_v3W77_T_X987B=
+  AIRFLOW__CORE__LOAD_EXAMPLES: "False"
+  AIRFLOW__API_AUTH__JWT_SECRET: "9a8776306cb5ef5b16b742438f5eb0810e83cd9b75371e48221e035ad7bac034"
+  AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@postgres-server/airflow
+  AIRFLOW__CORE__EXECUTION_API_SERVER_URL: "http://airflow-webserver:8080/execution/"
+  AIRFLOW__SCHEDULER__SCHEDULER_ZOMBIE_TASK_THRESHOLD: "1000"
+  # Garante que o Dag Processor escaneie a subpasta correta dentro do volume único mapeado
+  AIRFLOW__CORE__DAGS_FOLDER: /opt/airflow/dags
+  SPARK_LOCAL_IP: 127.0.0.1
+
+x-airflow-common: &airflow-common
+  image: airflow-pa:latest
+  volumes:
+    - ./AIRFLOW:/opt/airflow
+  depends_on:
+    postgres-server:
+      condition: service_healthy
+
+services:
+  # --- BANCO DE DADOS ---
+  postgres-server:
+    image: postgres:16-alpine
+    restart: always
+    container_name: postgres-server
+    hostname: postgres-server
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - data-postgres:/var/lib/postgresql/data
+    networks:
+      net:
+        ipv4_address: 172.28.0.2
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U airflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin4:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin4
+    hostname: pgadmin4
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=user@site.com
+      - PGADMIN_DEFAULT_PASSWORD=horseCr@zy2025
+    ports:
+      - 5050:80
+    networks:
+      net:
+        ipv4_address: 172.28.0.3
+
+  # --- AIRFLOW 3.0 ---
+  airflow-init:
+    <<: *airflow-common
+    container_name: airflow-init
+    command: version
+    networks:
+      net:
+        ipv4_address: 172.28.0.4
+    environment:
+      <<: *airflow-environment
+      _AIRFLOW_DB_UPGRADE: "true"
+      _AIRFLOW_WWW_USER_CREATE: "true"
+      _AIRFLOW_WWW_USER_USERNAME: admin_user
+      _AIRFLOW_WWW_USER_PASSWORD: senha_admin
+      _AIRFLOW_WWW_USER_ROLE: Admin
+      _AIRFLOW_WWW_USER_EMAIL: admin@exemplo.com
+
+  airflow-webserver:
+    <<: *airflow-common
+    container_name: airflow-webserver
+    command: api-server
+    ports:
+      - "8080:8080"
+    restart: always
+    networks:
+      net:
+        ipv4_address: 172.28.0.5
+    environment:
+      <<: *airflow-environment
+    depends_on:
+      postgres-server:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    container_name: airflow-scheduler
+    command: bash -c "airflow db migrate && airflow scheduler"
+    restart: always
+    networks:
+      net:
+        ipv4_address: 172.28.0.6
+    environment:
+      <<: *airflow-environment
+    depends_on:
+      postgres-server:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-dag-processor:
+    <<: *airflow-common
+    container_name: airflow-dag-processor
+    command: airflow dag-processor
+    restart: always
+    networks:
+      net:
+        ipv4_address: 172.28.0.7
+    environment:
+      <<: *airflow-environment
+    depends_on:
+      postgres-server:
+        condition: service_healthy
+      airflow-init:
+        condition: service_completed_successfully
+
+volumes:
+  data-postgres:
+
+# --- CONFIGURAÇÃO DA REDE COM SUBREDE ---
+networks:
+  net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16
