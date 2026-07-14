@@ -497,7 +497,7 @@ plt.tight_layout()
 plt.show()
 
 ```
-![alt text](image.png)
+![Vacas Ordenhadas por localidade](DOCUMENTS\IMG\vacas_ordenhadas_localidades.png)
 
 Na tabela default.bronze.conab.custo_de_producao, foi calculado o custo total de produção por hectare, considerando a soma dos custos variáveis e fixos. A evolução anual desse indicador permitiu avaliar o comportamento dos custos agrícolas ao longo do tempo, fornecendo uma visão histórica importante para análises econômicas e de planejamento.
 
@@ -529,7 +529,7 @@ plt.grid(True, linestyle='--', alpha=0.7)
 plt.tight_layout()
 plt.show()
 ```
-![Evolução dos custos totais](image-1.png)
+![Evolução dos custos totais](DOCUMENTS\IMG\custo_total_hectare.png)
 
 Os resultados evidenciam o potencial da arquitetura Data Lakehouse baseada em Apache Iceberg, Cloudflare R2 e Apache Spark para integrar, armazenar e analisar dados públicos do agronegócio de forma escalável, possibilitando análises espaciais e temporais que apoiam a geração de indicadores estratégicos e a tomada de decisão.
 
