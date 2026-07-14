@@ -1,12 +1,12 @@
-# 🌱 PIPELINE AGRO
+# 🌱 AGRODATA-PA
 
-## Plataforma de Dados para o Agronegócio
+## Dados para o Agronegócio
 
-Uma arquitetura moderna de dados para consolidar, processar e disponibilizar informações estratégicas do agronegócio brasileiro em um ambiente centralizado de Data Lake.
+Uma arquitetura de dados para consolidar, processar e disponibilizar informações estratégicas do agronegócio brasileiro em um ambiente centralizado de Data Lake.
 
 ---
 
-# 🎯 Objetivos da Plataforma
+# 🎯 Objetivos
 
 - Monitoramento de safras
 - Inteligência de mercado
@@ -21,7 +21,7 @@ Uma arquitetura moderna de dados para consolidar, processar e disponibilizar inf
 
 ## 1. Produção Agrícola e Estatísticas Oficiais
 
-### IBGE — SIDRA / Agregados
+### IBGE — Agregados
 
 | Dataset | Aplicação |
 |----------|------------|
@@ -64,24 +64,10 @@ Disponibiliza:
 - Velocidade do vento
 - Evapotranspiração
 
-### MapBiomas
-
-- Uso da terra
-- Cobertura vegetal
-- Agricultura
-- Desmatamento
-- Mudanças de uso do solo
 
 ---
 
 ## 4. Sanidade Agropecuária e Zoneamento
-
-### MAPA
-
-- Defensivos agrícolas
-- Bioinsumos
-- Certificações
-- Fiscalização
 
 ### EMBRAPA AgroAPI
 

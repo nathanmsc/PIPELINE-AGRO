@@ -24,14 +24,14 @@ from utils.conab_scraper import scraper_conab  # noqa: E402
 
 
 @dag(
-    dag_id="conab_ingestion",
+    dag_id="conab",
     description="Ingestão dinâmica de todos os datasets do Portal CONAB para o Iceberg (bronze)",
     schedule="@daily",
     start_date=pendulum.datetime(2026, 1, 1, tz="America/Bahia"),
     catchup=False,
     tags=["conab", "bronze", "iceberg", "spark"],
 )
-def conab_ingestion():
+def conab():
 
     @task
     def listar_datasets() -> list[dict]:
@@ -52,4 +52,4 @@ def conab_ingestion():
     carregar.expand(item=datasets)
 
 
-conab_ingestion()
+conab()
