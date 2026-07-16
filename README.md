@@ -1,6 +1,6 @@
 # 🌱 AGRODATA-PA
 
-## Dados para o Agronegócio
+## Projeto Aplicado de Pipeline de Dados para o Agronegócio
 
 Uma arquitetura de dados para consolidar, processar e disponibilizar informações estratégicas do agronegócio brasileiro em um ambiente centralizado de Data Lake.
 
